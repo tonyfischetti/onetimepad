@@ -15,8 +15,6 @@
   (display "warning one time pad should be larger that input file\n" (current-error-port)))
 
 (define encrypt (lambda (proc input-byte onetime-byte handle1 handle2 one-time-fn)
-  (display input-byte)
-  (newline)
   (if (eof-object? onetime-byte)
     (if (eof-object? input-byte)
       '()
