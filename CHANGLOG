@@ -1,0 +1,2 @@
+v0.3 - now reads in blocks (linux kernel test passes 50x faster now)
+v0.2 - pretty much works but needs features

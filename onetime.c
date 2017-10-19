@@ -36,29 +36,20 @@ const int BLOCK_SIZE = 500;
 
 
 const char *header_text = 
-    "\nonetime v0.2 -- one-time pad encryption on files (byte by byte)\n";
+    "\nonetime v0.3 -- one-time pad encryption on files (byte by byte)\n";
 
 const char *usage_text =
     "usage: onetime [-hed | -o output] input-file one-time-pad\n";
 
 
-/* int add(int one, int two){ */
-/*     return(one + two); */
-/* } */
-/*  */
-/* int sub(int one, int two){ */
-/*     return(one - two); */
-/* } */
 
 void add(size_t howmany, int *one, int *two, int *ciphertext){
-    // is it less than or equal to block size!!???
     for(int i = 0; i < howmany; i++){
         *(ciphertext+i) = *(one+i) + *(two+i);
     }
 }
 
 void sub(size_t howmany, int *one, int *two, int *ciphertext){
-    // is it less than or equal to block size!!???
     for(int i = 0; i < howmany; i++){
         *(ciphertext+i) = *(one+i) - *(two+i);
     }
@@ -66,17 +57,11 @@ void sub(size_t howmany, int *one, int *two, int *ciphertext){
 
 
 int main(int argc, char** argv){
-    /* int             CURRENT_IN = 0; */
     int             CURRENT_INS[BLOCK_SIZE];
-    /* char             CURRENT_INS[BLOCK_SIZE]; */
-    /* int              CURRENT_ONE = 0; */
     int             CURRENT_ONES[BLOCK_SIZE];
-    /* char             CURRENT_ONES[BLOCK_SIZE]; */
     unsigned long   IN_LEN;
     unsigned long   ONE_LEN;
-    /* int             CURRENT_CIPHER = 0; */
     int             CURRENT_CIPHERS[BLOCK_SIZE];
-    /* char             CURRENT_CIPHERS[BLOCK_SIZE]; */
     void            (*PROC_PNT)(size_t, int*, int*, int*);
     int             ONE_BIGGER = 0;
     char*           IN_FN;
@@ -132,9 +117,9 @@ int main(int argc, char** argv){
     IN_FN = argv[optind++];
     ONE_FN = argv[optind++];
 
-    FILE*           IN_FH = fopen(IN_FN, "rb");
-    FILE*           ONE_FH = fopen(ONE_FN, "rb");
-    FILE*           OUT_FH = fopen(OUT_FN, "wb");
+    FILE* IN_FH = fopen(IN_FN, "rb");
+    FILE* ONE_FH = fopen(ONE_FN, "rb");
+    FILE* OUT_FH = fopen(OUT_FN, "wb");
 
     // getting size of input file
     fseek(IN_FH, 0L, SEEK_END);
@@ -152,27 +137,7 @@ int main(int argc, char** argv){
         printf("Warning: one time pad is smaller than input file. Will recycle\n");
     }
 
-    // loop through the input file and encrypt it
-    // it used a function pointer that perform
-    // either ENcryption or DEcryption based on
-    // user specification
-    /* for(int i=0; i < IN_LEN; i++){ */
-    /*     if(ONE_BIGGER){ */
-    /*         // if we've reached the end of the */
-    /*         // one time pad, start over */
-    /*         if(feof(ONE_FH)){ */
-    /*             fseek(ONE_FH, 0, SEEK_SET); */
-    /*         } */
-    /*     } */
-    /*     CURRENT_IN  = fgetc(IN_FH); */
-    /*     CURRENT_ONE = fgetc(ONE_FH); */
-    /*     CURRENT_CIPHER = (*PROC_PNT)(CURRENT_IN, CURRENT_ONE); */
-    /*     fputc(CURRENT_CIPHER, OUT_FH); */
-    /* } */
-
     for(int i=0; i < IN_LEN; i+=BLOCK_SIZE){
-        /* CURRENT_IN  = fgetc(IN_FH); */
-
         int howmany = fread(CURRENT_INS, sizeof(char), BLOCK_SIZE, IN_FH);
         int howmanyone = fread(CURRENT_ONES, sizeof(char), BLOCK_SIZE, ONE_FH);
         if(ONE_BIGGER){
@@ -181,13 +146,6 @@ int main(int argc, char** argv){
                 fseek(ONE_FH, 0, SEEK_SET);
                 int howaboutnow = fread(&CURRENT_ONES[howmanyone], sizeof(char),
                                         thediff, ONE_FH);
-                /* printf("actual:          %d\n", howmany); */
-                /* printf("was:             %d\n", howmanyone); */
-                /* printf("now:             %d\n", howaboutnow); */
-                /* printf("needed:          %d\n", thediff); */
-                /* printf("alltogether:     %d\n", howaboutnow+howmanyone); */
-                /* printf("\n"); */
-                /* fflush(stdout); */
                 if((howaboutnow+howmanyone) < howmany){
                     fprintf(stderr, "fatal error: one time pad is too small\n");
                     exit(1);
@@ -195,29 +153,12 @@ int main(int argc, char** argv){
             }
         }
 
-
-        // need to change
         (*PROC_PNT)(howmany, CURRENT_INS, CURRENT_ONES, CURRENT_CIPHERS);
 
-        /* for(int i = 0; i < howmany; i++){ */
-        /*     printf("%d-%d\n", CURRENT_INS[i], CURRENT_ONES[i]); */
-        /* } */
-        /* printf("\n"); */
-        /* fflush(stdout); */
-        /* printf("\n"); */
-        /* printf("\n"); */
-        /* for(int i = 0; i < BLOCK_SIZE; i++){ */
-        /*     printf("%c", CURRENT_ONES[i]); */
-        /* } */
-        /* printf("\n"); */
-
         fwrite(CURRENT_CIPHERS, sizeof(char), howmany, OUT_FH);
-        /* printf("read %d bytes\n", howmany); */
         if(howmany<BLOCK_SIZE)
             break;
-        /* printf("going around again\n"); */
     }
-
 
     // close the files
     fclose(IN_FH);
