@@ -24,7 +24,7 @@ fi
 echo
 
 # -------------------------------------------------- #
-######          nofx with krs
+#####          nofx with krs
 # -------------------------------------------------- #
 THESIZE="$(du -h ./test-files/thedecline.mp3 | perl -pe 's/^\s*(.+?)\s+.*/$1/g')"
 ORIGINALMD5="$(md5 ./test-files/thedecline.mp3 | perl -pe 's/.+= //g')"
@@ -70,22 +70,22 @@ echo
 # -------------------------------------------------- #
 ######    tale of two cities with madame bovary
 # -------------------------------------------------- #
-THESIZE="$(du -h ./test-files/tale-of-two-cities.txt | perl -pe 's/^\s*(.+?)\s+.*/$1/g')"
-ORIGINALMD5="$(md5 ./test-files/tale-of-two-cities.txt | perl -pe 's/.+= //g')"
-TIMETOOK="$(gtime -f '%e' ./onetime -e ./test-files/tale-of-two-cities.txt ./test-files/madame-bovary.txt -o ./tmp/ciphertext 2>&1 > /dev/null)"
-CHANGEDMD5="$(md5 ./tmp/ciphertext | perl -pe 's/.+= //g')"
-./onetime -d ./tmp/ciphertext ./test-files/madame-bovary.txt -o ./tmp/original.txt 2>&1 > /dev/null
-DECRYPTEDMD5="$(md5 ./tmp/original.txt | perl -pe 's/.+= //g')"
-
-if [ "$ORIGINALMD5" == "$DECRYPTEDMD5" ]
-then
-    echo "Tale of Two Cities test passed"
-    echo "tale of two cities ($THESIZE) took $TIMETOOK seconds"
-else
-    echo "Tale of Two Cities test failed" 1>&2;
-    exit 1
-fi
-echo
+# THESIZE="$(du -h ./test-files/tale-of-two-cities.txt | perl -pe 's/^\s*(.+?)\s+.*/$1/g')"
+# ORIGINALMD5="$(md5 ./test-files/tale-of-two-cities.txt | perl -pe 's/.+= //g')"
+# TIMETOOK="$(gtime -f '%e' ./onetime -e ./test-files/tale-of-two-cities.txt ./test-files/madame-bovary.txt -o ./tmp/ciphertext 2>&1 > /dev/null)"
+# CHANGEDMD5="$(md5 ./tmp/ciphertext | perl -pe 's/.+= //g')"
+# ./onetime -d ./tmp/ciphertext ./test-files/madame-bovary.txt -o ./tmp/original.txt 2>&1 > /dev/null
+# DECRYPTEDMD5="$(md5 ./tmp/original.txt | perl -pe 's/.+= //g')"
+#
+# if [ "$ORIGINALMD5" == "$DECRYPTEDMD5" ]
+# then
+#     echo "Tale of Two Cities test passed"
+#     echo "tale of two cities ($THESIZE) took $TIMETOOK seconds"
+# else
+#     echo "Tale of Two Cities test failed" 1>&2;
+#     exit 1
+# fi
+# echo
 
 
 # -------------------------------------------------- #

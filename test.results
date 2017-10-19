@@ -1,15 +1,12 @@
 KRS-One test passed
-krs (8.2M) took 0.94 seconds
+krs (8.2M) took 0.03 seconds
 
 NOFX test passed
-nofx (25M) took 3.75 seconds
+nofx (25M) took 0.10 seconds
 
 Madame Bovary test passed
-madame bovary (680K) took 0.08 seconds
-
-Tale of Two Cities test passed
-tale of two cities (788K) took 0.13 seconds
+madame bovary (680K) took 0.01 seconds
 
 Linux Kernel Archine test passed
-kernel archive (96M) took 10.91 seconds
+kernel archive (96M) took 0.29 seconds
 
