@@ -1,2 +1,4 @@
 onetime
 tmp/
+.DS_Store
+test-files/.DS_Store
