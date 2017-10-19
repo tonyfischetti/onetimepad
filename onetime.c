@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 const char *header_text = 
-    "\nonetime v0.2 -- one-time pad encryption on binary files\n";
+    "\nonetime v0.2 -- one-time pad encryption on files (byte by byte)\n";
 
 const char *usage_text =
     "usage: onetime [-hed | -o output] input-file one-time-pad\n";
