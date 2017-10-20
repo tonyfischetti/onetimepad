@@ -8,9 +8,9 @@ mkdir -p ./tmp/
 # -------------------------------------------------- #
 THESIZE="$(du -h ./test-files/krs-one-ny.mp3 | perl -pe 's/^\s*(.+?)\s+.*/$1/g')"
 ORIGINALMD5="$(md5 ./test-files/krs-one-ny.mp3 | perl -pe 's/.+= //g')"
-TIMETOOK="$(gtime -f '%e' ./onetime -e ./test-files/krs-one-ny.mp3 ./test-files/thedecline.mp3 -o ./tmp/ciphertext 2>&1 > /dev/null)"
-CHANGEDMD5="$(md5 ./tmp/ciphertext | perl -pe 's/.+= //g')"
-./onetime -d ./tmp/ciphertext ./test-files/thedecline.mp3 -o ./tmp/original.mp3
+TIMETOOK="$(gtime -f '%e' ./onetime -e ./test-files/krs-one-ny.mp3 ./test-files/thedecline.mp3 --output ./tmp/myciphertext 2>&1 > /dev/null)"
+CHANGEDMD5="$(md5 ./tmp/myciphertext | perl -pe 's/.+= //g')"
+./onetime --decrypt ./tmp/myciphertext ./test-files/thedecline.mp3 -o ./tmp/original.mp3
 DECRYPTEDMD5="$(md5 ./tmp/original.mp3 | perl -pe 's/.+= //g')"
 
 if [ "$ORIGINALMD5" == "$DECRYPTEDMD5" ]
@@ -51,7 +51,7 @@ echo
 # -------------------------------------------------- #
 THESIZE="$(du -h ./test-files/madame-bovary.txt | perl -pe 's/^\s*(.+?)\s+.*/$1/g')"
 ORIGINALMD5="$(md5 ./test-files/madame-bovary.txt | perl -pe 's/.+= //g')"
-TIMETOOK="$(gtime -f '%e' ./onetime -e ./test-files/madame-bovary.txt ./test-files/tale-of-two-cities.txt -o ./tmp/ciphertext 2>&1 > /dev/null)"
+TIMETOOK="$(gtime -f '%e' ./onetime --encrypt ./test-files/madame-bovary.txt ./test-files/tale-of-two-cities.txt --output ./tmp/ciphertext 2>&1 > /dev/null)"
 CHANGEDMD5="$(md5 ./tmp/ciphertext | perl -pe 's/.+= //g')"
 ./onetime -d ./tmp/ciphertext ./test-files/tale-of-two-cities.txt -o ./tmp/original.txt 2>&1 > /dev/null
 DECRYPTEDMD5="$(md5 ./tmp/original.txt | perl -pe 's/.+= //g')"
@@ -70,22 +70,22 @@ echo
 # -------------------------------------------------- #
 ######    tale of two cities with madame bovary
 # -------------------------------------------------- #
-# THESIZE="$(du -h ./test-files/tale-of-two-cities.txt | perl -pe 's/^\s*(.+?)\s+.*/$1/g')"
-# ORIGINALMD5="$(md5 ./test-files/tale-of-two-cities.txt | perl -pe 's/.+= //g')"
-# TIMETOOK="$(gtime -f '%e' ./onetime -e ./test-files/tale-of-two-cities.txt ./test-files/madame-bovary.txt -o ./tmp/ciphertext 2>&1 > /dev/null)"
-# CHANGEDMD5="$(md5 ./tmp/ciphertext | perl -pe 's/.+= //g')"
-# ./onetime -d ./tmp/ciphertext ./test-files/madame-bovary.txt -o ./tmp/original.txt 2>&1 > /dev/null
-# DECRYPTEDMD5="$(md5 ./tmp/original.txt | perl -pe 's/.+= //g')"
-#
-# if [ "$ORIGINALMD5" == "$DECRYPTEDMD5" ]
-# then
-#     echo "Tale of Two Cities test passed"
-#     echo "tale of two cities ($THESIZE) took $TIMETOOK seconds"
-# else
-#     echo "Tale of Two Cities test failed" 1>&2;
-#     exit 1
-# fi
-# echo
+THESIZE="$(du -h ./test-files/tale-of-two-cities.txt | perl -pe 's/^\s*(.+?)\s+.*/$1/g')"
+ORIGINALMD5="$(md5 ./test-files/tale-of-two-cities.txt | perl -pe 's/.+= //g')"
+TIMETOOK="$(gtime -f '%e' ./onetime -e ./test-files/tale-of-two-cities.txt ./test-files/madame-bovary.txt -o ./tmp/ciphertext 2>&1 > /dev/null)"
+CHANGEDMD5="$(md5 ./tmp/ciphertext | perl -pe 's/.+= //g')"
+./onetime -d ./tmp/ciphertext ./test-files/madame-bovary.txt -o ./tmp/original.txt 2>&1 > /dev/null
+DECRYPTEDMD5="$(md5 ./tmp/original.txt | perl -pe 's/.+= //g')"
+
+if [ "$ORIGINALMD5" == "$DECRYPTEDMD5" ]
+then
+    echo "Tale of Two Cities test passed"
+    echo "tale of two cities ($THESIZE) took $TIMETOOK seconds"
+else
+    echo "Tale of Two Cities test failed" 1>&2;
+    exit 1
+fi
+echo
 
 
 # -------------------------------------------------- #
