@@ -146,39 +146,33 @@ int main(int argc, char** argv){
             strcpy(tmp, base);
             strcat(tmp, ".pad");
             OUT_FN = (char*) malloc(strlen(tmp)*sizeof(char)+1);
+            memset(OUT_FN, '\0', strlen(tmp)*sizeof(char)+1);
             strcpy(OUT_FN, tmp);
         }
         else{
-            printf("here\n");
-            int len = strlen(IN_FN);
-            printf("the length: <%d>\n", len);
+            char* base = basename(IN_FN);
+            int len = strlen(base);
             int start = len-4;
             char* comp = ".pad";
             int j = 0;
             int num_matches = 0;
             for(int i=start; i < len; i++){
-                char this = IN_FN[i];
+                char this = base[i];
                 char that = comp[j];
                 if(this == that)
                     num_matches++;
-                printf("this: <%c>   that: <%c>\n", this, that);
                 j++;
             }
             if(num_matches==4){
                 char tmp[len-5];
                 for(int k=0; k < len-4; k++){
-                    tmp[k] = IN_FN[k];
+                    tmp[k] = base[k];
                 }
                 tmp[len-4] = '\0';
-                printf("tmp: <%s>\n", tmp);
                 OUT_FN = (char*) malloc(strlen(tmp)*sizeof(char)+1);
-                /* OUT_FN = (char*) malloc(strlen(tmp)*sizeof(char)); */
                 memset(OUT_FN, '\0', strlen(tmp)*sizeof(char)+1);
                 strcpy(OUT_FN, tmp);
             }
-            printf("num matches: %d\n", num_matches);
-            printf("OUT_FN: %s\n", OUT_FN);
-            fflush(stdout);
         }
     }
 
