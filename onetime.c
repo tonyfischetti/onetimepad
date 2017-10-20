@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <libgen.h>
+#include <string.h>
 
 const int BLOCK_SIZE = 500;
 
@@ -55,12 +56,6 @@ void sub(size_t howmany, int *one, int *two, int *ciphertext){
         *(ciphertext+i) = *(one+i) - *(two+i);
     }
 }
-void swap(char *str1, char *str2){
-  char *temp = str1;
-  str1 = str2;
-  str2 = temp;
-}  
-
 
 
 int main(int argc, char** argv){
@@ -73,9 +68,7 @@ int main(int argc, char** argv){
     int             ONE_BIGGER = 0;
     char*           IN_FN;
     char*           ONE_FN;
-    char*           OUT_FN = "this";  // gets overrided
-    /* char*           OUT_FN = '';  // gets overrided */
-    /* char*           OUT_FN; */
+    char*           OUT_FN = "this gets overwriten";
     int             OUT_SPECIFIED = 0;
     int             DECRYPT_SPECIFIED = 0;
     int             ENCRYPT_SPECIFIED = 0;
@@ -113,7 +106,7 @@ int main(int argc, char** argv){
                  }
                  DECRYPT_SPECIFIED = 1;
                  PROC_PNT = &sub;
-                 OUT_FN = "original";
+                 OUT_FN = "decryptedfile";
                  break;
              case 'o':
                  OUT_FN = optarg;
@@ -154,6 +147,38 @@ int main(int argc, char** argv){
             strcat(tmp, ".pad");
             OUT_FN = (char*) malloc(strlen(tmp)*sizeof(char)+1);
             strcpy(OUT_FN, tmp);
+        }
+        else{
+            printf("here\n");
+            int len = strlen(IN_FN);
+            printf("the length: <%d>\n", len);
+            int start = len-4;
+            char* comp = ".pad";
+            int j = 0;
+            int num_matches = 0;
+            for(int i=start; i < len; i++){
+                char this = IN_FN[i];
+                char that = comp[j];
+                if(this == that)
+                    num_matches++;
+                printf("this: <%c>   that: <%c>\n", this, that);
+                j++;
+            }
+            if(num_matches==4){
+                char tmp[len-5];
+                for(int k=0; k < len-4; k++){
+                    tmp[k] = IN_FN[k];
+                }
+                tmp[len-4] = '\0';
+                printf("tmp: <%s>\n", tmp);
+                OUT_FN = (char*) malloc(strlen(tmp)*sizeof(char)+1);
+                /* OUT_FN = (char*) malloc(strlen(tmp)*sizeof(char)); */
+                memset(OUT_FN, '\0', strlen(tmp)*sizeof(char)+1);
+                strcpy(OUT_FN, tmp);
+            }
+            printf("num matches: %d\n", num_matches);
+            printf("OUT_FN: %s\n", OUT_FN);
+            fflush(stdout);
         }
     }
 
