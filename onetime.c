@@ -198,6 +198,10 @@ int main(int argc, char** argv){
         exit(1);
     }
     FILE* OUT_FH = fopen(OUT_FN, "wb");
+    if(OUT_FH==NULL){
+        fprintf(stderr, "error: can't write to output file (is there a directory that doesn't exist?)\n");
+        exit(1);
+    }
 
     // getting size of input file
     fseek(IN_FH, 0L, SEEK_END);

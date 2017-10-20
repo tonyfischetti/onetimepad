@@ -314,5 +314,22 @@ rm -rf ./tmp/
 mkdir -p ./tmp/
 
 
+# -------------------------------------------------- #
+######   error can't write output file test
+# -------------------------------------------------- #
+MESSAGE="$(./onetime ./test-files/shakira-letra.txt ./test-files/shakira-letra.txt -o ./nope/tmp 2>&1)"
+
+if [ "$MESSAGE" == "error: can't write to output file (is there a directory that doesn't exist?)" ] && [ ! -e ./nope.tmp ]
+then
+    echo "Passed: Error can't write to output file test"
+else
+    echo "Failure: Error can't write to output file test" 1>&2;
+    exit 1
+fi
+echo
+rm -rf ./tmp/
+mkdir -p ./tmp/
+
+
 rm -rf ./tmp/
 exit 0
