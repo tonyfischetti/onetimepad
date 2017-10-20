@@ -1,5 +1,6 @@
 #!/bin/bash
-set -e
+
+# set -e
 
 # some systems use this
 # TIME="time"
@@ -193,6 +194,47 @@ fi
 echo
 rm -rf ./tmp/
 mkdir -p ./tmp/
+
+
+echo
+echo "---"
+echo "now testing warnings and errors"
+echo
+
+# -------------------------------------------------- #
+######   warning pad smaller test
+# -------------------------------------------------- #
+MESSAGE="$(./onetime -e ./test-files/thedecline.mp3 ./test-files/krs-one-ny.mp3 --output ./tmp/ciphertext)"
+
+if [ "$MESSAGE" == "Warning: one time pad is smaller than input file. Will recycle" ]
+then
+    echo "Warning Pad Smaller test passed"
+else
+    echo "Warning pad Smaller test failed" 1>&2;
+    exit 1
+fi
+echo
+rm -rf ./tmp/
+mkdir -p ./tmp/
+
+
+# -------------------------------------------------- #
+######   error pad too small test
+# -------------------------------------------------- #
+MESSAGE="$(./onetime -e ./test-files/thedecline.mp3 ./test-files/sml --output ./tmp/ciphertext 2>&1)"
+
+if [ "$MESSAGE" == "fatal error: one time pad is too small" ] && [ ! -e ./thedecline.mp3.pad ]
+then
+    echo "Error pad too small test passed"
+else
+    echo "Error pad too small test failed" 1>&2;
+    exit 1
+fi
+echo
+rm -rf ./tmp/
+mkdir -p ./tmp/
+
+
 
 
 
