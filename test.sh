@@ -146,6 +146,7 @@ mkdir -p ./tmp/
 
 echo "---"
 echo "now testing files with unicode characters"
+echo "---"
 echo
 
 # -------------------------------------------------- #
@@ -196,10 +197,36 @@ rm -rf ./tmp/
 mkdir -p ./tmp/
 
 
+# -------------------------------------------------- #
+######          shakira with shakira unicode 3
+# -------------------------------------------------- #
+THESIZE="$(du -h ./test-files/shakira-letra.txt | perl -pe 's/^\s*(.+?)\s+.*/$1/g')"
+ORIGINALMD5="$(GETHASH ./test-files/shakira-letra.txt)"
+TIMETOOK="$($TIME -f '%e' ./onetime -e ./test-files/shakira-letra.txt ./test-files/shakira-letra.txt 2>&1 > /dev/null)"
+mv shakira-letra.txt.pad ./tmp/
+CHANGEDMD5="$(GETHASH ./tmp/shakira-letra.txt.pad)"
+./onetime --decrypt ./tmp/shakira-letra.txt.pad ./test-files/shakira-letra.txt
+mv shakira-letra.txt ./tmp/
+DECRYPTEDMD5="$(GETHASH ./tmp/shakira-letra.txt)"
+
+if [ "$ORIGINALMD5" == "$DECRYPTEDMD5" ]
+then
+    echo "Shakira Unicode 3 test passed"
+    echo "Shakira ($THESIZE) took $TIMETOOK seconds"
+else
+    echo "Shakira Unicode 3 test failed" 1>&2;
+    exit 1
+fi
+echo
+rm -rf ./tmp/
+mkdir -p ./tmp/
+
+
 echo
 echo "---"
 echo "now testing warnings and errors"
 echo
+echo "---"
 
 # -------------------------------------------------- #
 ######   warning pad smaller test

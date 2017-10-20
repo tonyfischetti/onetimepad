@@ -223,6 +223,7 @@ int main(int argc, char** argv){
                                         thediff, ONE_FH);
                 if((howaboutnow+howmanyone) < howmany){
                     fprintf(stderr, "fatal error: one time pad is too small\n");
+                    int ret = unlink(OUT_FN);
                     if(ret!=0)
                         fprintf(stderr, "fatal: could not remove output file\n");
                     exit(1);
