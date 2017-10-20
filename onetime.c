@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <libgen.h>
 
 const int BLOCK_SIZE = 500;
 
@@ -54,6 +55,12 @@ void sub(size_t howmany, int *one, int *two, int *ciphertext){
         *(ciphertext+i) = *(one+i) - *(two+i);
     }
 }
+void swap(char *str1, char *str2){
+  char *temp = str1;
+  str1 = str2;
+  str2 = temp;
+}  
+
 
 
 int main(int argc, char** argv){
@@ -66,7 +73,12 @@ int main(int argc, char** argv){
     int             ONE_BIGGER = 0;
     char*           IN_FN;
     char*           ONE_FN;
-    char*           OUT_FN = "ciphertext";
+    char*           OUT_FN = "this";  // gets overrided
+    /* char*           OUT_FN = '';  // gets overrided */
+    /* char*           OUT_FN; */
+    int             OUT_SPECIFIED = 0;
+    int             DECRYPT_SPECIFIED = 0;
+    int             ENCRYPT_SPECIFIED = 0;
 
     // default is to encrypt
     PROC_PNT = &add;
@@ -87,14 +99,25 @@ int main(int argc, char** argv){
                    long_options, &long_index )) != -1) {
         switch (c) {
              case 'e':
+                 if(DECRYPT_SPECIFIED){
+                     fprintf(stderr, "Must be either encryption or decryption\n");
+                     exit(EXIT_FAILURE);
+                 }
+                 ENCRYPT_SPECIFIED = 1;
                  PROC_PNT = &add;
                  break;
              case 'd':
+                 if(ENCRYPT_SPECIFIED){
+                     fprintf(stderr, "Must be either encryption or decryption\n");
+                     exit(EXIT_FAILURE);
+                 }
+                 DECRYPT_SPECIFIED = 1;
                  PROC_PNT = &sub;
-                 OUT_FN= "original";
+                 OUT_FN = "original";
                  break;
              case 'o':
                  OUT_FN = optarg;
+                 OUT_SPECIFIED = 1;
                  break;
              case 'h':
                 printf("%s", header_text);
@@ -117,9 +140,26 @@ int main(int argc, char** argv){
     IN_FN = argv[optind++];
     ONE_FN = argv[optind++];
 
+    if(DECRYPT_SPECIFIED==0 && ENCRYPT_SPECIFIED==0)
+        ENCRYPT_SPECIFIED = 1;
+
+    // if output file isn't specifies
+    // let's use good defaults
+    if(OUT_SPECIFIED==0){
+        if(ENCRYPT_SPECIFIED){
+            char* base = basename(IN_FN);
+            int length = strlen(base);
+            char tmp[length+5];
+            strcpy(tmp, base);
+            strcat(tmp, ".pad");
+            OUT_FN = (char*) malloc(strlen(tmp)*sizeof(char)+1);
+            strcpy(OUT_FN, tmp);
+        }
+    }
+
     FILE* IN_FH = fopen(IN_FN, "rb");
     FILE* ONE_FH = fopen(ONE_FN, "rb");
-    FILE* OUT_FH = fopen(OUT_FN, "wb");
+    FILE* OUT_FH = fopen(OUT_FN, "wb"); /////
 
     // getting size of input file
     fseek(IN_FH, 0L, SEEK_END);

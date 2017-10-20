@@ -29,10 +29,10 @@ echo
 THESIZE="$(du -h ./test-files/thedecline.mp3 | perl -pe 's/^\s*(.+?)\s+.*/$1/g')"
 ORIGINALMD5="$(md5 ./test-files/thedecline.mp3 | perl -pe 's/.+= //g')"
 TIMETOOK="$(gtime -f '%e' ./onetime ./test-files/thedecline.mp3 ./test-files/krs-one-ny.mp3 2>&1 > /dev/null)"
-mv ciphertext ./tmp/
-CHANGEDMD5="$(md5 ./tmp/ciphertext | perl -pe 's/.+= //g')"
-./onetime -d ./tmp/ciphertext ./test-files/krs-one-ny.mp3 2>&1 > /dev/null
-mv ./original ./tmp/
+mv thedecline.mp3.pad ./tmp/
+CHANGEDMD5="$(md5 ./tmp/thedecline.mp3.pad | perl -pe 's/.+= //g')"
+./onetime -d ./tmp/thedecline.mp3.pad ./test-files/krs-one-ny.mp3 2>&1 > /dev/null
+mv ./original ./tmp/original
 DECRYPTEDMD5="$(md5 ./tmp/original | perl -pe 's/.+= //g')"
 
 if [ "$ORIGINALMD5" == "$DECRYPTEDMD5" ]
