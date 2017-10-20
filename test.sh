@@ -225,8 +225,8 @@ mkdir -p ./tmp/
 echo
 echo "---"
 echo "now testing warnings and errors"
-echo
 echo "---"
+echo
 
 # -------------------------------------------------- #
 ######   warning pad smaller test
@@ -235,9 +235,9 @@ MESSAGE="$(./onetime -e ./test-files/thedecline.mp3 ./test-files/krs-one-ny.mp3 
 
 if [ "$MESSAGE" == "Warning: one time pad is smaller than input file. Will recycle" ]
 then
-    echo "Warning Pad Smaller test passed"
+    echo "Passed: Warning Pad Smaller test"
 else
-    echo "Warning pad Smaller test failed" 1>&2;
+    echo "Failure: Warning pad Smaller test" 1>&2;
     exit 1
 fi
 echo
@@ -248,13 +248,13 @@ mkdir -p ./tmp/
 # -------------------------------------------------- #
 ######   error pad too small test
 # -------------------------------------------------- #
-MESSAGE="$(./onetime -e ./test-files/thedecline.mp3 ./test-files/sml --output ./tmp/ciphertext 2>&1)"
+MESSAGE="$(./onetime -e ./test-files/thedecline.mp3 ./test-files/sml 2>&1)"
 
 if [ "$MESSAGE" == "fatal error: one time pad is too small" ] && [ ! -e ./thedecline.mp3.pad ]
 then
-    echo "Error pad too small test passed"
+    echo "Passed: Error pad too small test"
 else
-    echo "Error pad too small test failed" 1>&2;
+    echo "Failure: Error pad too small test" 1>&2;
     exit 1
 fi
 echo
@@ -262,7 +262,56 @@ rm -rf ./tmp/
 mkdir -p ./tmp/
 
 
+# -------------------------------------------------- #
+######   error non existent input test
+# -------------------------------------------------- #
+MESSAGE="$(./onetime ./nonexistent ./test-files/shakira-letra.txt -o ./tmp/this 2>&1)"
 
+if [ "$MESSAGE" == "error: couldn't open input file (does it exist?)" ] && [ ! -e ./tmp/this ]
+then
+    echo "Passed: Error non existent input test"
+else
+    echo "Failure: Error non existent input" 1>&2;
+    exit 1
+fi
+echo
+rm -rf ./tmp/
+mkdir -p ./tmp/
+
+
+# -------------------------------------------------- #
+######   error non existent pad test
+# -------------------------------------------------- #
+MESSAGE="$(./onetime ./test-files/shakira-letra.txt ./nonexistent -o ./tmp/this 2>&1)"
+
+if [ "$MESSAGE" == "error: couldn't open one-time pad file (does it exist?)" ] && [ ! -e ./tmp/this ]
+then
+    echo "Passed: Error non existent pad test"
+else
+    echo "Failure: Error non existent pad" 1>&2;
+    exit 1
+fi
+echo
+rm -rf ./tmp/
+mkdir -p ./tmp/
+
+
+# -------------------------------------------------- #
+######   error already existent output test
+# -------------------------------------------------- #
+touch ./tmp/estoyaexiste
+MESSAGE="$(./onetime ./test-files/shakira-letra.txt ./test-files/shakira-letra.txt -o ./tmp/estoyaexiste 2>&1)"
+
+if [ "$MESSAGE" == "error: output file already exists" ] && [ -e ./tmp/estoyaexiste ]
+then
+    echo "Passed: Error already existent output test"
+else
+    echo "Failure: Error already existent output test" 1>&2;
+    exit 1
+fi
+echo
+rm -rf ./tmp/
+mkdir -p ./tmp/
 
 
 rm -rf ./tmp/

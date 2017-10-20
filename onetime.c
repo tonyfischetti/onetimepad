@@ -38,7 +38,7 @@ const int BLOCK_SIZE = 500;
 
 
 const char *header_text = 
-    "\nonetime v0.3 -- one-time pad encryption on files (byte by byte)\n";
+    "\nonetime v0.4 -- one-time pad encryption on files (byte by byte)\n";
 
 const char *usage_text =
     "usage: onetime [-hed | -o output] input-file one-time-pad\n";
@@ -181,8 +181,22 @@ int main(int argc, char** argv){
         }
     }
 
+    // open files if checks pass
     FILE* IN_FH = fopen(IN_FN, "rb");
+    if(IN_FH==NULL){
+        fprintf(stderr, "error: couldn't open input file (does it exist?)\n");
+        exit(1);
+    }
     FILE* ONE_FH = fopen(ONE_FN, "rb");
+    if(ONE_FH==NULL){
+        fprintf(stderr, "error: couldn't open one-time pad file (does it exist?)\n");
+        exit(1);
+    }
+    FILE* tmp = fopen(OUT_FN, "rb");
+    if(tmp){
+        fprintf(stderr, "error: output file already exists\n");
+        exit(1);
+    }
     FILE* OUT_FH = fopen(OUT_FN, "wb");
 
     // getting size of input file
