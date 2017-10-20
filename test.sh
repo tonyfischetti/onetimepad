@@ -1,5 +1,5 @@
 #!/bin/bash
-# set -e
+set -e
 
 # some systems use this
 # TIME="time"
@@ -30,7 +30,6 @@ GETHASH (){
 # -------------------------------------------------- #
 THESIZE="$(du -h ./test-files/krs-one-ny.mp3 | perl -pe 's/^\s*(.+?)\s+.*/$1/g')"
 ORIGINALMD5="$(GETHASH ./test-files/krs-one-ny.mp3)"
-# TIMETOOK="$($TIME -f '%e' ./onetime --encrypt ./test-files/krs-one-ny.mp3 ./test-files/thedecline.mp3 --output ./tmp/myciphertext)"
 TIMETOOK="$($TIME -f '%e' ./onetime --encrypt ./test-files/krs-one-ny.mp3 ./test-files/thedecline.mp3 --output ./tmp/myciphertext 2>&1 > /dev/null)"
 CHANGEDMD5="$(GETHASH ./tmp/myciphertext)"
 ./onetime --decrypt ./tmp/myciphertext ./test-files/thedecline.mp3 -o ./tmp/original.mp3

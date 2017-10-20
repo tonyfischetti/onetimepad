@@ -87,7 +87,7 @@ int main(int argc, char** argv){
         {0, 0, 0, 0}
     };
     
-    int long_index =0;
+    int long_index = 0;
     while ((c = getopt_long(argc, argv,"hdeo:", 
                    long_options, &long_index )) != -1) {
         switch (c) {
@@ -136,9 +136,11 @@ int main(int argc, char** argv){
     if(DECRYPT_SPECIFIED==0 && ENCRYPT_SPECIFIED==0)
         ENCRYPT_SPECIFIED = 1;
 
-    // if output file isn't specifies
+    // if output file isn't specified
     // let's use good defaults
     if(OUT_SPECIFIED==0){
+        // default filenames for encryption...
+        // appends ".pad" to the filename
         if(ENCRYPT_SPECIFIED){
             char* base = basename(IN_FN);
             int length = strlen(base);
@@ -149,17 +151,19 @@ int main(int argc, char** argv){
             memset(OUT_FN, '\0', strlen(tmp)*sizeof(char)+1);
             strcpy(OUT_FN, tmp);
         }
+        // for default decrypted filenames....
+        // check if it ends with ".pad"
+        // if so, remove it, if not, use
+        // "decryptedfile"
         else{
             char* base = basename(IN_FN);
             int len = strlen(base);
             int start = len-4;
-            char* comp = ".pad";
+            const char* comp = ".pad";
             int j = 0;
             int num_matches = 0;
             for(int i=start; i < len; i++){
-                char this = base[i];
-                char that = comp[j];
-                if(this == that)
+                if(base[i] == comp[j])
                     num_matches++;
                 j++;
             }
@@ -168,6 +172,7 @@ int main(int argc, char** argv){
                 for(int k=0; k < len-4; k++){
                     tmp[k] = base[k];
                 }
+                // this cause heartache
                 tmp[len-4] = '\0';
                 OUT_FN = (char*) malloc(strlen(tmp)*sizeof(char)+1);
                 memset(OUT_FN, '\0', strlen(tmp)*sizeof(char)+1);
@@ -178,7 +183,7 @@ int main(int argc, char** argv){
 
     FILE* IN_FH = fopen(IN_FN, "rb");
     FILE* ONE_FH = fopen(ONE_FN, "rb");
-    FILE* OUT_FH = fopen(OUT_FN, "wb"); /////
+    FILE* OUT_FH = fopen(OUT_FN, "wb");
 
     // getting size of input file
     fseek(IN_FH, 0L, SEEK_END);
@@ -190,12 +195,23 @@ int main(int argc, char** argv){
     ONE_LEN = ftell(ONE_FH);
     fseek(ONE_FH, 0, SEEK_SET);
 
+    // one time pad needs to be bigger than block size
+    if(ONE_LEN < BLOCK_SIZE){
+        fprintf(stderr, "fatal error: one time pad is too small\n");
+        int ret = unlink(OUT_FN);
+        if(ret!=0)
+            fprintf(stderr, "fatal: could not remove output file\n");
+        exit(1);
+    }
+
     // check if one time pad is smaller than input file
     if(IN_LEN > ONE_LEN){
         ONE_BIGGER = 1;
         printf("Warning: one time pad is smaller than input file. Will recycle\n");
     }
 
+
+    // loop that does the (en|de)cryption
     for(int i=0; i < IN_LEN; i+=BLOCK_SIZE){
         int howmany = fread(CURRENT_INS, sizeof(char), BLOCK_SIZE, IN_FH);
         int howmanyone = fread(CURRENT_ONES, sizeof(char), BLOCK_SIZE, ONE_FH);
@@ -207,6 +223,8 @@ int main(int argc, char** argv){
                                         thediff, ONE_FH);
                 if((howaboutnow+howmanyone) < howmany){
                     fprintf(stderr, "fatal error: one time pad is too small\n");
+                    if(ret!=0)
+                        fprintf(stderr, "fatal: could not remove output file\n");
                     exit(1);
                 }
             }
