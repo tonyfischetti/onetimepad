@@ -1,9 +1,9 @@
 
 KRS-One test passed
-krs (8.2M) took 0.03 seconds
+krs (8.2M) took 0.05 seconds
 
 NOFX test passed
-nofx (25M) took 0.07 seconds
+nofx (25M) took 0.08 seconds
 
 Madame Bovary test passed
 madame bovary (680K) took 0.00 seconds
@@ -12,7 +12,7 @@ Tale of Two Cities test passed
 tale of two cities (788K) took 0.00 seconds
 
 Linux Kernel Archine test passed
-kernel archive (96M) took 0.26 seconds
+kernel archive (96M) took 0.24 seconds
 
 
 ---
@@ -20,7 +20,7 @@ now testing files with unicode characters
 ---
 
 KRS-One Unicode 1 test passed
-krs (8.2M) took 0.02 seconds
+krs (8.2M) took 0.03 seconds
 
 KRS-One Unicode 2 test passed
 krs (8.2M) took 0.02 seconds
