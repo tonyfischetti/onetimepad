@@ -145,11 +145,17 @@ int main(int argc, char** argv){
             char* base = basename(IN_FN);
             int length = strlen(base);
             char tmp[length+5];
-            strcpy(tmp, base);
-            strcat(tmp, ".pad");
+            memset(tmp, '\0', length*sizeof(char)+1);
+            strncpy(tmp, base, length);
+            strncat(tmp, ".pad", 5);
+            tmp[length+5] = '\0';
             OUT_FN = (char*) malloc(strlen(tmp)*sizeof(char)+1);
+            if(!OUT_FN){
+                fprintf(stderr, "Fatal error: failed to allocate memory\n");
+                exit(EXIT_FAILURE);
+            }
             memset(OUT_FN, '\0', strlen(tmp)*sizeof(char)+1);
-            strcpy(OUT_FN, tmp);
+            strncpy(OUT_FN, tmp, length+5);
         }
         // for default decrypted filenames....
         // check if it ends with ".pad"
@@ -172,11 +178,15 @@ int main(int argc, char** argv){
                 for(int k=0; k < len-4; k++){
                     tmp[k] = base[k];
                 }
-                // this cause heartache
+                // this caused heartache
                 tmp[len-4] = '\0';
                 OUT_FN = (char*) malloc(strlen(tmp)*sizeof(char)+1);
+                if(!OUT_FN){
+                    fprintf(stderr, "Fatal error: failed to allocate memory\n");
+                    exit(EXIT_FAILURE);
+                }
                 memset(OUT_FN, '\0', strlen(tmp)*sizeof(char)+1);
-                strcpy(OUT_FN, tmp);
+                strncpy(OUT_FN, tmp, strlen(tmp));
             }
         }
     }

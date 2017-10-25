@@ -330,6 +330,8 @@ echo
 rm -rf ./tmp/
 mkdir -p ./tmp/
 
+GREEN='\033[0;32m'
+printf "${GREEN}All tests passed\n"
 
 rm -rf ./tmp/
 exit 0
