@@ -1,4 +1,4 @@
-/* Copyright (c) 2017, Tony Fischetti
+/* Copyright (c) 2017, 2018 Tony Fischetti
  *
  * MIT License, http://www.opensource.org/licenses/mit-license.php
  * 
@@ -33,15 +33,16 @@
 #include <unistd.h>
 #include <libgen.h>
 #include <string.h>
+#include <limits.h>
 
 const int BLOCK_SIZE = 500;
 
 
 const char *header_text = 
-    "\nonetime v0.4 -- one-time pad encryption on files (byte by byte)\n";
+    "\nonetime v0.5 -- one-time pad encryption on files (byte by byte)\n";
 
 const char *usage_text =
-    "usage: onetime [-hed | -o output] input-file one-time-pad\n";
+    "usage: onetime [-heds | -o output] input-file <one-time-pad>\n";
 
 
 
@@ -72,6 +73,7 @@ int main(int argc, char** argv){
     int             OUT_SPECIFIED = 0;
     int             DECRYPT_SPECIFIED = 0;
     int             ENCRYPT_SPECIFIED = 0;
+    int             SHOW_ONE_TIME_SPECIFIED = 0;
 
     // default is to encrypt
     PROC_PNT = &add;
@@ -83,12 +85,13 @@ int main(int argc, char** argv){
     {
         {"encrypt", no_argument, 0, 'e'},
         {"decrypt", no_argument, 0, 'd'},
+        {"show-onetimefile", no_argument, 0, 's'},
         {"output",  required_argument, 0, 'o'},
         {0, 0, 0, 0}
     };
     
     int long_index = 0;
-    while ((c = getopt_long(argc, argv,"hdeo:", 
+    while ((c = getopt_long(argc, argv,"hdeso:", 
                    long_options, &long_index )) != -1) {
         switch (c) {
              case 'e':
@@ -108,6 +111,9 @@ int main(int argc, char** argv){
                  PROC_PNT = &sub;
                  OUT_FN = "decryptedfile";
                  break;
+             case 's':
+                 SHOW_ONE_TIME_SPECIFIED = 1;
+                 break;
              case 'o':
                  OUT_FN = optarg;
                  OUT_SPECIFIED = 1;
@@ -125,13 +131,38 @@ int main(int argc, char** argv){
         }
     }
 
-    if(optind+2 != argc){
+    if(optind+1 ==argc){
+        IN_FN = argv[optind++];
+        ONE_FN = getpass("Enter one-time pad file: ");
+        if(strlen(ONE_FN) == 0){
+            fprintf(stderr, "No one-time pad file specified\n");
+            exit(EXIT_FAILURE);
+        }
+        if(strlen(ONE_FN) > 127 || strlen(ONE_FN) >= PASS_MAX){
+            fprintf(stderr, "one-time pad filename too long: possibility of truncation\n");
+            exit(EXIT_FAILURE);
+        }
+    }
+    else if(optind+2 == argc){
+        IN_FN = argv[optind++];
+        ONE_FN = argv[optind++];
+    }
+    else{
         fprintf(stderr, "missing files\n");
         fprintf(stderr, usage_text);
         exit(EXIT_FAILURE);
     }
-    IN_FN = argv[optind++];
-    ONE_FN = argv[optind++];
+
+    
+    if(SHOW_ONE_TIME_SPECIFIED){
+        printf("One-time pad file is: %s\n  Continue? (y/n) ", ONE_FN);
+        char response[2];
+        fgets(response, 2, stdin);
+        if(strcmp(response, "y")!=0 && strcmp(response, "Y")){
+            fprintf(stderr, "quitting\n");
+            exit(EXIT_FAILURE);
+        }
+    }
 
     if(DECRYPT_SPECIFIED==0 && ENCRYPT_SPECIFIED==0)
         ENCRYPT_SPECIFIED = 1;
